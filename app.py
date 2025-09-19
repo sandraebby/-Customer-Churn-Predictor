@@ -20,11 +20,14 @@ st.markdown("Predict telecom customer churn with a **Random Forest model** 🚀"
 def load_model():
     import requests, io, joblib
 
-    # Direct link to your .pkl file (make sure it's the raw link)
-    url = "https://github.com/your-username/your-repo/raw/main/random_forest_pipeline_compressed.pkl"
-    r = requests.get(url)
+    # ✅ Direct link to your .pkl file (raw link)
+    url = "https://github.com/sandraebby/-Customer-Churn-Predictor/raw/refs/heads/main/random_forest_pipeline_compressed.pkl"
 
-    # Load directly from memory
+    # Download the model file
+    r = requests.get(url)
+    r.raise_for_status()  # raise error if download fails
+
+    # Load model directly from memory
     return joblib.load(io.BytesIO(r.content))
 
 @st.cache_data
@@ -193,4 +196,5 @@ else:
         csv = data.to_csv(index=False).encode("utf-8")
 
         st.download_button("📥 Download Full Predictions", csv, "predictions.csv", "text/csv")
+
 
