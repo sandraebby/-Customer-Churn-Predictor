@@ -18,7 +18,25 @@ st.markdown("Predict telecom customer churn with a **Random Forest model** 🚀"
 # ==========================
 @st.cache_resource
 def load_model():
-    return joblib.load("random_forest_pipeline.pkl")
+    import requests, zipfile, io, os
+    
+    # Download zip from GitHub (replace with your raw file link)
+    url = "https://github.com/your-username/your-repo/raw/main/random_forest_pipeline.zip"
+    r = requests.get(url)
+
+    # Unzip into a folder
+    extract_path = "unzipped_model"
+    z = zipfile.ZipFile(io.BytesIO(r.content))
+    z.extractall(extract_path)
+
+    # Auto-detect the .pkl file
+    files = os.listdir(extract_path)
+    pkl_files = [f for f in files if f.endswith(".pkl")]
+    if not pkl_files:
+        raise FileNotFoundError("No .pkl file found in the extracted zip!")
+    
+    model_path = os.path.join(extract_path, pkl_files[0])  # pick the first .pkl
+    return joblib.load(model_path)
 
 @st.cache_data
 def process_csv(file):
@@ -184,4 +202,5 @@ else:
 
         # Download full results
         csv = data.to_csv(index=False).encode("utf-8")
+
         st.download_button("📥 Download Full Predictions", csv, "predictions.csv", "text/csv")
